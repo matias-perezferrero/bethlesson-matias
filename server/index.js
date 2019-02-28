@@ -7,6 +7,18 @@ const express = require("express"),
 const app = express(),
   { SERVER_PORT, CONNECTION_STRING, SESSION_SECRET } = process.env;
 
+app.use(express.json());
+app.use(
+  session({
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 123123123
+    }
+  })
+);
+
 massive(CONNECTION_STRING).then(db => {
   app.set("db", db);
   console.log("Database connected");
@@ -17,3 +29,6 @@ massive(CONNECTION_STRING).then(db => {
 });
 
 app.post("/auth/register", ctrl.register);
+app.post("/auth/login", ctrl.login);
+app.get("/api/current", ctrl.getUser);
+app.post("/auth/logout", ctrl.logout);
